@@ -1,5 +1,69 @@
-(function initHorizontalSliders(){const sliders=Array.from(document.querySelectorAll(".veeaardvark .vee-slider"));if(!sliders.length)return;sliders.forEach((slider)=>{const viewport=slider.querySelector(".vee-slider-viewport");const track=slider.querySelector(".vee-slider-track");const cards=track?Array.from(track.querySelectorAll(".vee-slider-card")):[];const section=slider.closest(".veeaardvark-section");const ctrl=section?section.querySelector(".vee-slider-ctrl"):null;const prevBtn=ctrl?ctrl.querySelector("[data-slider-prev]"):null;const nextBtn=ctrl?ctrl.querySelector("[data-slider-next]"):null;if(!viewport||!track||!cards.length||!prevBtn||!nextBtn)return;function getStep(){if(cards.length<2){return cards[0].getBoundingClientRect().width||viewport.clientWidth}
-const firstRect=cards[0].getBoundingClientRect();const secondRect=cards[1].getBoundingClientRect();const delta=secondRect.left-firstRect.left;return delta||firstRect.width}
-function updateButtons(){const maxScroll=viewport.scrollWidth-viewport.clientWidth;const x=viewport.scrollLeft;prevBtn.disabled=x<=1||maxScroll<=0;nextBtn.disabled=x>=maxScroll-1||maxScroll<=0}
-function scrollByDir(dir){const step=getStep();const target=viewport.scrollLeft+dir*step;viewport.scrollTo({left:target,behavior:"smooth"})}
-prevBtn.addEventListener("click",function(){scrollByDir(-1)});nextBtn.addEventListener("click",function(){scrollByDir(1)});let scrollTimeout=null;viewport.addEventListener("scroll",function(){if(scrollTimeout)cancelAnimationFrame(scrollTimeout);scrollTimeout=requestAnimationFrame(updateButtons)});updateButtons();window.addEventListener("resize",function(){updateButtons()})})})()
+// =============================
+// HORIZONTAL SLIDERS (PROMOS / PROVIDERS / LUCKY / TOOLS)
+// =============================
+(function initHorizontalSliders() {
+  const sliders = Array.from(document.querySelectorAll(".veeaardvark .vee-slider"));
+  if (!sliders.length) return;
+
+  sliders.forEach((slider) => {
+    const viewport = slider.querySelector(".vee-slider-viewport");
+    const track = slider.querySelector(".vee-slider-track");
+    const cards = track ? Array.from(track.querySelectorAll(".vee-slider-card")) : [];
+
+    // IMPORTANT: controls live in the section header, not inside .vee-slider
+    const section = slider.closest(".veeaardvark-section");
+    const ctrl = section ? section.querySelector(".vee-slider-ctrl") : null;
+    const prevBtn = ctrl ? ctrl.querySelector("[data-slider-prev]") : null;
+    const nextBtn = ctrl ? ctrl.querySelector("[data-slider-next]") : null;
+
+    if (!viewport || !track || !cards.length || !prevBtn || !nextBtn) return;
+
+    function getStep() {
+      if (cards.length < 2) {
+        return cards[0].getBoundingClientRect().width || viewport.clientWidth;
+      }
+      const firstRect = cards[0].getBoundingClientRect();
+      const secondRect = cards[1].getBoundingClientRect();
+      const delta = secondRect.left - firstRect.left;
+      return delta || firstRect.width;
+    }
+
+    function updateButtons() {
+      const maxScroll = viewport.scrollWidth - viewport.clientWidth;
+      const x = viewport.scrollLeft;
+
+      prevBtn.disabled = x <= 1 || maxScroll <= 0;
+      nextBtn.disabled = x >= maxScroll - 1 || maxScroll <= 0;
+    }
+
+    function scrollByDir(dir) {
+      const step = getStep();
+      const target = viewport.scrollLeft + dir * step;
+      viewport.scrollTo({
+        left: target,
+        behavior: "smooth"
+      });
+    }
+
+    prevBtn.addEventListener("click", function() {
+      scrollByDir(-1);
+    });
+
+    nextBtn.addEventListener("click", function() {
+      scrollByDir(1);
+    });
+
+    let scrollTimeout = null;
+    viewport.addEventListener("scroll", function() {
+      if (scrollTimeout) cancelAnimationFrame(scrollTimeout);
+      scrollTimeout = requestAnimationFrame(updateButtons);
+    });
+
+    // initial button state
+    updateButtons();
+
+    window.addEventListener("resize", function() {
+      updateButtons();
+    });
+  });
+})();
