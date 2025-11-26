@@ -3,8 +3,10 @@ function openPopup(){popup.classList.add('is-open');popup.classList.remove('vee-
 function collapsePopup(){popup.classList.remove('is-open');popup.classList.add('vee-offer-popup--collapsed')}
 if(isMobile()){try{if(window.localStorage&&localStorage.getItem('veeOfferDismissedMobile')==='1'){if(wrapper)wrapper.style.display='none';return}}catch(e){}
 openPopup()}else{collapsePopup()}
-if(closeBtn){closeBtn.addEventListener('click',function(e){e.stopPropagation();if(isMobile()){try{if(window.localStorage){localStorage.setItem('veeOfferDismissedMobile','1')}}catch(err){}
-if(wrapper)wrapper.style.display='none'}else{collapsePopup()}})}
+function handleCloseClick(e){e.stopPropagation();if(isMobile()){try{if(window.localStorage){localStorage.setItem('veeOfferDismissedMobile','1')}}catch(err){}
+if(wrapper)wrapper.style.display='none'}else{collapsePopup()}}
+if(closeBtn){closeBtn.addEventListener('click',handleCloseClick)}
+if(wrapper){wrapper.addEventListener('click',function(e){if(!isMobile())return;if(e.target===wrapper){if(closeBtn){closeBtn.click()}else{handleCloseClick(e)}}})}
 if(activateBtn){activateBtn.addEventListener('click',function(e){e.stopPropagation();window.location.href='/sign-up'})}
 if(handle){handle.addEventListener('click',function(e){if(isMobile())return;e.stopPropagation();if(popup.classList.contains('is-open')){collapsePopup()}else{openPopup()}})}
 popup.addEventListener('mouseenter',function(){if(isMobile())return;openPopup()});popup.addEventListener('mouseleave',function(){if(isMobile())return;collapsePopup()});popup.addEventListener('focusin',function(){if(isMobile())return;openPopup()});popup.addEventListener('focusout',function(){if(isMobile())return;collapsePopup()});function handleTilt(e){if(isMobile())return;var rect=card.getBoundingClientRect();var x=e.clientX-rect.left;var y=e.clientY-rect.top;var midX=rect.width/2;var midY=rect.height/2;var rotateX=((midY-y)/midY)*6;var rotateY=((x-midX)/midX)*6;card.style.setProperty('--rotateX',rotateX.toFixed(2)+'deg');card.style.setProperty('--rotateY',rotateY.toFixed(2)+'deg');card.style.setProperty('--scale','1.02');if(parallaxLayer){var translateX=((x-midX)/midX)*12;var translateY=((y-midY)/midY)*12;parallaxLayer.style.transform='translate3d('+translateX.toFixed(1)+'px,'+translateY.toFixed(1)+'px,0)'}}
