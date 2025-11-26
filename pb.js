@@ -1,69 +1,14 @@
-// =============================
-// HORIZONTAL SLIDERS (PROMOS / PROVIDERS / LUCKY / TOOLS)
-// =============================
-(function initHorizontalSliders() {
-  const sliders = Array.from(document.querySelectorAll(".veeaardvark .vee-slider"));
-  if (!sliders.length) return;
-
-  sliders.forEach((slider) => {
-    const viewport = slider.querySelector(".vee-slider-viewport");
-    const track = slider.querySelector(".vee-slider-track");
-    const cards = track ? Array.from(track.querySelectorAll(".vee-slider-card")) : [];
-
-    // IMPORTANT: controls live in the section header, not inside .vee-slider
-    const section = slider.closest(".veeaardvark-section");
-    const ctrl = section ? section.querySelector(".vee-slider-ctrl") : null;
-    const prevBtn = ctrl ? ctrl.querySelector("[data-slider-prev]") : null;
-    const nextBtn = ctrl ? ctrl.querySelector("[data-slider-next]") : null;
-
-    if (!viewport || !track || !cards.length || !prevBtn || !nextBtn) return;
-
-    function getStep() {
-      if (cards.length < 2) {
-        return cards[0].getBoundingClientRect().width || viewport.clientWidth;
-      }
-      const firstRect = cards[0].getBoundingClientRect();
-      const secondRect = cards[1].getBoundingClientRect();
-      const delta = secondRect.left - firstRect.left;
-      return delta || firstRect.width;
-    }
-
-    function updateButtons() {
-      const maxScroll = viewport.scrollWidth - viewport.clientWidth;
-      const x = viewport.scrollLeft;
-
-      prevBtn.disabled = x <= 1 || maxScroll <= 0;
-      nextBtn.disabled = x >= maxScroll - 1 || maxScroll <= 0;
-    }
-
-    function scrollByDir(dir) {
-      const step = getStep();
-      const target = viewport.scrollLeft + dir * step;
-      viewport.scrollTo({
-        left: target,
-        behavior: "smooth"
-      });
-    }
-
-    prevBtn.addEventListener("click", function() {
-      scrollByDir(-1);
-    });
-
-    nextBtn.addEventListener("click", function() {
-      scrollByDir(1);
-    });
-
-    let scrollTimeout = null;
-    viewport.addEventListener("scroll", function() {
-      if (scrollTimeout) cancelAnimationFrame(scrollTimeout);
-      scrollTimeout = requestAnimationFrame(updateButtons);
-    });
-
-    // initial button state
-    updateButtons();
-
-    window.addEventListener("resize", function() {
-      updateButtons();
-    });
-  });
-})();
+(function forcePlaybetJS(){function whenReady(fn){if(document.readyState==="complete"||document.readyState==="interactive"){setTimeout(fn,0)}else{document.addEventListener("DOMContentLoaded",fn,{once:!0})}}
+function afterLayout(fn){requestAnimationFrame(()=>requestAnimationFrame(fn))}
+function forceRun(fn){fn();setTimeout(fn,60);setTimeout(fn,250)}
+function initPlaybetHero(){const root=document.querySelector('.veeaardvark');if(!root)return;const carousels=root.querySelectorAll('.veeaardvark-carousel');if(!carousels.length)return;carousels.forEach((carousel)=>{const slidesWrap=carousel.querySelector('.veeaardvark-slides');const slides=slidesWrap?.querySelectorAll('.veeaardvark-slide')||[];const prevBtn=carousel.querySelector('[data-car-prev]');const nextBtn=carousel.querySelector('[data-car-next]');const dots=carousel.querySelectorAll('.veeaardvark-dot');if(!slidesWrap||!slides.length)return;let index=0;let timer=null;const AUTO_MS=6000;function goTo(i){index=(i+slides.length)%slides.length;slidesWrap.style.transform=`translateX(${index * -100}%)`;dots.forEach((d,idx)=>{const active=idx===index;d.classList.toggle("is-active",active);d.setAttribute("aria-current",active?"true":"false")})}
+function next(){goTo(index+1)}
+function prev(){goTo(index-1)}
+function autoStart(){clearInterval(timer);timer=setInterval(next,AUTO_MS)}
+function autoStop(){clearInterval(timer)}
+nextBtn?.addEventListener("click",()=>{next();autoStart()});prevBtn?.addEventListener("click",()=>{prev();autoStart()});dots.forEach((d,idx)=>{d.addEventListener("click",()=>{goTo(idx);autoStart()})});carousel.addEventListener("mouseenter",autoStop);carousel.addEventListener("mouseleave",autoStart);goTo(0);autoStart()})}
+function initPlaybetSliders(){const root=document.querySelector('.veeaardvark');if(!root)return;const sections=root.querySelectorAll('.veeaardvark-section');sections.forEach((section)=>{const slider=section.querySelector('.vee-slider');const ctrl=section.querySelector('.vee-slider-ctrl');if(!slider||!ctrl)return;const viewport=slider.querySelector('.vee-slider-viewport');const track=slider.querySelector('.vee-slider-track');const cards=track?.querySelectorAll('.vee-slider-card')||[];const prevBtn=ctrl.querySelector('[data-slider-prev]');const nextBtn=ctrl.querySelector('[data-slider-next]');if(!viewport||!track||!cards.length)return;function getStep(){if(cards.length<2)return viewport.clientWidth;const a=cards[0].getBoundingClientRect();const b=cards[1].getBoundingClientRect();const base=(b.left-a.left)||a.width;return Math.max(base,viewport.clientWidth*0.8)}
+const maxX=()=>viewport.scrollWidth-viewport.clientWidth;function sync(){const x=viewport.scrollLeft;const max=maxX();prevBtn.disabled=x<=1;nextBtn.disabled=x>=max-1}
+function scrollDir(dir){viewport.scrollBy({left:dir*getStep(),behavior:"smooth"})}
+prevBtn?.addEventListener("click",()=>scrollDir(-1));nextBtn?.addEventListener("click",()=>scrollDir(1));viewport.addEventListener("scroll",sync,{passive:!0});window.addEventListener("resize",sync);sync()})}
+whenReady(()=>{afterLayout(()=>{forceRun(initPlaybetHero);forceRun(initPlaybetSliders);new MutationObserver(()=>{forceRun(initPlaybetSliders)}).observe(document.body,{childList:!0,subtree:!0})})})})()
